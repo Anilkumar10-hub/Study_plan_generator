@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <link rel="stylesheet" href="assets/vendors/feather/feather.css">
+      <link rel="stylesheet" href="assets/vendors/mdi/css/materialdesignicons.min.css">
+      <link rel="stylesheet" href="assets/vendors/ti-icons/css/themify-icons.css">
+      <link rel="stylesheet" href="assets/vendors/font-awesome/css/font-awesome.min.css">
+      <link rel="stylesheet" href="assets/vendors/typicons/typicons.css">
+      <link rel="stylesheet" href="assets/vendors/simple-line-icons/css/simple-line-icons.css">
+      <link rel="stylesheet" href="assets/vendors/css/vendor.bundle.base.css">
+      <link rel="stylesheet" href="assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css">
+      <link rel="stylesheet" href="assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css">
+      <link rel="stylesheet" type="text/css" href="assets/js/select.dataTables.min.css">
+      <link rel="stylesheet" href="assets/css/style.css">
+      <link rel="shortcut icon" href="assets/images/favicon.png" />
+      <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics-compat.js"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <title>AI-Driven Personalized Study Plan Generator</title>
+      <style>
+         body {
+         font-family: Arial, sans-serif;
+         line-height: 1.6;
+         margin: 0;
+         padding: 20px;
+         background-color: #f4f4f4;
+         }
+         .container {
+         max-width: 800px;
+         margin: auto;
+         background: white;
+         padding: 20px;
+         border-radius: 5px;
+         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+         }
+         h1 {
+         color: #333;
+         }
+         form {
+         display: flex;
+         flex-direction: column;
+         margin-bottom: 20px;
+         }
+         input,
+         select {
+         margin-bottom: 10px;
+         padding: 10px;
+         border: 1px solid #ddd;
+         border-radius: 4px;
+         }
+         button {
+         padding: 10px;
+         background-color: #007bff;
+         color: white;
+         border: none;
+         border-radius: 4px;
+         cursor: pointer;
+         }
+         button:disabled {
+         background-color: #cccccc;
+         }
+         #studyPlan {
+         margin-top: 20px;
+         padding: 20px;
+         background-color: #f9f9f9;
+         border-radius: 4px;
+         white-space: pre-wrap;
+         word-wrap: break-word;
+         }
+         .error {
+         color: red;
+         font-weight: bold;
+         }
+      </style>
+   </head>
+   <body class="with-welcome-text">
+      <div class="container-scroller">
+        <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+              <div class="me-3">
+                <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+                  <span class="icon-menu"></span>
+                </button>
+              </div>
+              <div>
+                <a class="navbar-brand brand-logo" href="index.html">
+                  <h3><b> <span style="color: #000;"> Study</span><span style="color: #1F3BB3">Plan</span></b></h3>
+                </a>
+                <a class="navbar-brand brand-logo-mini" href="index.html">
+                    <h3><b> <span style="color: #000;"> Study</span><span style="color: #1F3BB3">Plan</span></b></h3>
+        
+                </a>
+              </div>
+            </div>
+            <div class="navbar-menu-wrapper d-flex align-items-top">
+              <ul class="navbar-nav">
+                <li class="nav-item fw-semibold d-none d-lg-block ms-0">
+                  <h1 class="welcome-text">Hello, <span class="text-black fw-bold" id="welcome-text-username"></span></h1>
+                  <h3 class="welcome-sub-text">Study Plans Designed Around Your Needs </h3>
+                </li>
+              </ul>
+              <ul class="navbar-nav ms-auto">
+               
+               
+                <li class="nav-item dropdown">
+                  <a class="nav-link count-indicator" href="#">
+                    <i class="icon-bell"></i>
+                    <span class="count"></span>
+                  </a>
+                 
+                </li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link count-indicator" href="#">
+                    <i class="icon-search icon-lg"></i>
+                  </a>
+                  
+                </li>
+                <li class="nav-item dropdown d-none d-lg-block user-dropdown">
+                    <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img class="img-xs rounded-circle" id="userAvatar" src="assets/images/faces/default-avatar.jpg" alt="Profile image">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
+                        <div class="dropdown-header text-center">
+                            <img class="img-md rounded-circle" id="userAvatarLarge" src="assets/images/faces/default-avatar.jpg" alt="Profile image">
+                            <p class="mb-1 mt-3 fw-semibold" id="userName">Loading...</p>
+                            <p class="fw-light text-muted mb-0" id="userEmail">Loading...</p>
+                        </div>
+                        <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile</a>
+                        <a class="dropdown-item" id="signOut"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i> Sign Out</a>
+                    </div>
+                </li>
+              </ul>
+              <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+                data-bs-toggle="offcanvas">
+                <span class="mdi mdi-menu"></span>
+              </button>
+            </div>
+          </nav>
+         <div class="container-fluid page-body-wrapper">
+            <div id="sidenav"></div>
+            <div class="main-panel">
+               <div class="content-wrapper">
+                  <div class="row">
+                     <div class="col-sm-12">
+                        <div class="home-tab">
+                           <div class="tab-content tab-content-basic">
+                              <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview">
+                                 <div class="row flex-grow">
+                                    <div class="col-12 grid-margin stretch-card">
+                                       <div class="card card-rounded">
+                                          <div class="card-body">
+                                             <div class="row">
+                                                <div class="col-lg-12">
+                                                   <div class="d-flex justify-content-between align-items-center">
+                                                      <h4 class="card-title card-title-dash">Generated plans list</h4>
+                                                   </div>
+                                                   <div class="list-wrapper">
+                                                      <ul class="todo-list todo-list-rounded"  id="studyPlansList">
+                                                      </ul>
+                                                   </div>
+                                                   <!-- Modal -->
+<!-- Modal -->
+<div class="modal fade" id="studyPlanModal" tabindex="-1" aria-labelledby="studyPlanModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="studyPlanModalLabel">Study Plan Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="studyPlanModalBody">
+                <!-- Plan details will be inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="color: #fff;">Close</button>
+                <button type="button" class="btn btn-primary" id="copyButton" style="color: #fff;">Copy Plan</button>
+            </div>
+        </div>
+    </div>
+</div>
+                                                </div>
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <footer class="footer">
+                  <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                    
+                     <span class="float-none float-sm-end d-block mt-1 mt-sm-0 text-center">Copyright © 2024. All rights
+                     reserved.</span>
+                  </div>
+               </footer>
+            </div>
+         </div>
+      </div>
+      <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics-compat.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+      <script src="assets/js/nav.js"></script>
+      <script src="assets/js/firebase.js"></script>
+      <script>
+   const db = firebase.firestore();
+
+function fetchAndDisplayStudyPlans() {
+    const studyPlansList = document.getElementById('studyPlansList');
+
+    db.collection("studyPlans").orderBy("createdAt", "desc").get()
+        .then((querySnapshot) => {
+            studyPlansList.innerHTML = ''; 
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const planPreview = data.plan.substring(0, 130) + (data.plan.length > 130 ? '...' : '');
+                const dateTime = data.createdAt.toDate().toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+
+                const listItem = `
+                    <li class="d-block">
+                        <div class="form-check w-100">
+                            <label class="form-check-label">
+                                <p class="checkbox" onclick="openStudyPlanModal('${doc.id}')" style="cursor: pointer;">${data.subject}: ${planPreview}<i class="input-helper rounded"></i></p>
+                            </label>
+                            <div class="d-flex mt-2">
+                                <div class="ps-4 text-small me-3">${dateTime}</div>
+                                <div class="mb-2">
+                                    <button class="add btn btn-icons btn-rounded btn-primary todo-list-add-btn text-white me-0 pl-12p" onclick="deleteStudyPlan('${doc.id}')">
+                                        <i class="mdi mdi-delete"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                `;
+
+                studyPlansList.innerHTML += listItem;
+            });
+        })
+        .catch((error) => {
+            console.error("Error fetching study plans: ", error);
+        });
+}
+
+function openStudyPlanModal(planId) {
+    db.collection("studyPlans").doc(planId).get()
+        .then((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                const modalBody = document.getElementById('studyPlanModalBody');
+                const formattedPlan = data.plan.replace(/\n/g, '<br>');
+                modalBody.innerHTML = `
+                    <h4>${data.subject}</h4>
+                    <p><strong>Created at:</strong> ${data.createdAt.toDate().toLocaleString()}</p>
+                    <p><strong>Plan:</strong></p>
+                    <div id="planContent">${formattedPlan}</div>
+                `;
+                const modal = new bootstrap.Modal(document.getElementById('studyPlanModal'));
+                modal.show();
+
+                const copyButton = document.getElementById('copyButton');
+                copyButton.onclick = function() {
+                    copyToClipboard(data.plan);
+                };
+            } else {
+                console.log("No such document!");
+            }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+        });
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        Swal.fire({
+            title: 'Copied!',
+            text: 'Study plan has been copied to clipboard',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }, function(err) {
+        console.error('Could not copy text: ', err);
+        Swal.fire({
+            title: 'Error!',
+            text: 'Failed to copy study plan',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    });
+}
+
+function deleteStudyPlan(planId) {
+    db.collection("studyPlans").doc(planId).delete()
+        .then(() => {
+            Swal.fire({
+                title: 'Deleted!',
+                text: 'Study plan successfully deleted!',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+            console.log("Study plan successfully deleted!");
+            fetchAndDisplayStudyPlans(); // Refresh the list
+        })
+        .catch((error) => {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Error removing study plan: ' + error.message,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            console.error("Error removing study plan: ", error);
+        });
+}
+
+document.addEventListener('DOMContentLoaded', fetchAndDisplayStudyPlans);
+
+
+      </script>
+       <script>
+      
+    
+    function updateUserInfo(user) {
+        if (user) {
+            document.getElementById('userName').textContent = user.displayName || 'Anonymous';
+        document.getElementById('welcome-text-username').textContent = user.displayName || 'Anonymous';
+            document.getElementById('userEmail').textContent = user.email || 'No email';
+            if (user.photoURL) {
+                document.getElementById('userAvatar').src = user.photoURL;
+                document.getElementById('userAvatarLarge').src = user.photoURL;
+            } else {
+                document.getElementById('userAvatar').src = 'assets/images/faces/default-avatar.jpg';
+                document.getElementById('userAvatarLarge').src = 'assets/images/faces/default-avatar.jpg';
+            }
+        } else {
+            document.getElementById('userName').textContent = 'Not signed in';
+            document.getElementById('userEmail').textContent = '';
+            document.getElementById('userAvatar').src = 'assets/images/faces/default-avatar.jpg';
+            document.getElementById('userAvatarLarge').src = 'assets/images/faces/default-avatar.jpg';
+        }
+    }
+    
+    function signOut() {
+        firebase.auth().signOut().then(() => {
+            console.log('User signed out');
+            window.location.href = '/login.html'; // Adjust this URL as needed
+        }).catch((error) => {
+            console.error('Sign Out Error', error);
+            alert('An error occurred while signing out. Please try again.');
+        });
+    }
+    
+    document.getElementById('signOut').addEventListener('click', signOut);
+    
+    firebase.auth().onAuthStateChanged((user) => {
+        updateUserInfo(user);
+    });
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        const user = firebase.auth().currentUser;
+        if (user) {
+            updateUserInfo(user);
+        } else {
+            console.log('No user currently signed in. Waiting for auth state change.');
+        }
+    });
+      </script>
+      <script src="assets/vendors/js/vendor.bundle.base.js"></script>
+      <script src="assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+      <script src="assets/vendors/chart.js/chart.umd.js"></script>
+      <script src="assets/vendors/progressbar.js/progressbar.min.js"></script>
+      <script src="assets/js/off-canvas.js"></script>
+      <script src="assets/js/template.js"></script>
+      <script src="assets/js/settings.js"></script>
+      <script src="assets/js/hoverable-collapse.js"></script>
+      <script src="assets/js/todolist.js"></script>
+      <script src="assets/js/jquery.cookie.js" type="text/javascript"></script>
+      <script src="assets/js/dashboard.js"></script>
+   </body>
+</html>

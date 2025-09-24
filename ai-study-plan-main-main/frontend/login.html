@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>AI-Driven Personalized Study Plan Generator</title>
+    <link rel="stylesheet" href="../../assets/vendors/feather/feather.css">
+    <link rel="stylesheet" href="../../assets/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="../../assets/vendors/ti-icons/css/themify-icons.css">
+    <link rel="stylesheet" href="../../assets/vendors/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../assets/vendors/typicons/typicons.css">
+    <link rel="stylesheet" href="../../assets/vendors/simple-line-icons/css/simple-line-icons.css">
+    <link rel="stylesheet" href="../../assets/vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="../../assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="shortcut icon" href="../../assets/images/favicon.png" />
+     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics-compat.js"></script>
+  </head>
+  <body>
+    <div class="container-scroller">
+      <div class="container-fluid page-body-wrapper full-page-wrapper">
+        <div class="content-wrapper d-flex align-items-center auth px-0">
+          <div class="row w-100 mx-0">
+            <div class="col-lg-4 mx-auto">
+              <div class="auth-form-light text-left py-5 px-4 px-sm-5">
+                <div class="brand-logo">
+                    <h3><b> <span style="color: #000;"> Study</span><span style="color: #1F3BB3">Plan</span></b></h3>
+                </div>
+                <h4>Hello! let's get started</h4>
+                <h6 class="fw-light">Sign in to continue.</h6>
+                <form class="pt-3">
+                  <div class="mb-2 d-grid gap-2">
+                       <img src="./assets/images/google-login.png" alt=""  style="cursor:pointer; border-radius: 10px; border: 1px solid #000;" width="280px"  id="googleSignIn">
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="../../assets/vendors/js/vendor.bundle.base.js"></script>
+    <script src="../../assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+    <script src="../../assets/js/off-canvas.js"></script>
+    <script src="../../assets/js/template.js"></script>
+    <script src="../../assets/js/settings.js"></script>
+    <script src="../../assets/js/hoverable-collapse.js"></script>
+    <script src="../../assets/js/todolist.js"></script>
+    <script src="assets/js/firebase.js"></script>
+    <script>
+        document.getElementById('googleSignIn').addEventListener('click', function() {
+    var provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider)
+        .then(function(result) {
+            var user = result.user;
+            console.log("User signed in:", user);
+
+            sessionStorage.setItem('userAvatar', user.photoURL || 'default-avatar.png');
+            sessionStorage.setItem('userName', user.displayName || 'User');
+            sessionStorage.setItem('userEmail', user.email || 'user@example.com');
+
+            window.location.href = 'index.html';
+        })
+        .catch(function(error) {
+            console.error("Error during sign-in: ", error);
+        });
+});
+
+    </script>
+  </body>
+</html>
